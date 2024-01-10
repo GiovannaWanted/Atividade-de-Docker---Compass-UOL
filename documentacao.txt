@@ -1,0 +1,98 @@
+Documentação da Atividade Docker na AWS
+
+Esta documentação fornece um guia passo a passo para a execução da atividade de Docker na AWS, 
+abordando a criação de uma instância EC2, a instalação e configuração do Docker, o deploy de uma aplicação WordPress 
+com RDS (Amazon Relational Database Service), a configuração do Amazon Elastic File System (EFS) e a implementação 
+de um Load Balancer utilizando o serviço da AWS.
+
+1. Criação da Instância EC2:
+1.1. Acesse o console AWS e vá para o serviço EC2.
+
+1.2. Crie uma nova instância EC2 utilizando o assistente. Selecione a imagem desejada, uma instância adequada e as configurações necessárias.
+
+1.3. Em "Configurar Detalhes da Instância", adicione um script user_data.sh para realizar a instalação do Docker na inicialização da instância.
+   #!/bin/bash
+   sudo yum update -y
+   sudo amazon-linux-extras install docker -y
+   sudo systemctl start docker
+   sudo usermod -aG docker ec2-user
+
+2. Instalação e Configuração do Docker:
+  
+2.1. Conecte-se à instância EC2 via SSH.
+
+2.2. Execute o script user_data.sh manualmente ou reinicie a instância para aplicar as configurações.
+
+  2.3. Verifique a instalação do Docker:
+    docker --version
+
+    3.Crie um Dockerfile para o WordPress, especificando a utilização do EFS para armazenar estáticos:
+  FROM wordpress:latest
+
+3.1. Construa e execute o contêiner:
+ docker build -t meu-wordpress:latest .
+ docker run -p 8080:80 -d meu-wordpress:latest
+
+3.2. Acesse o WordPress em um navegador para configurar a aplicação.
+
+   4. Configuração do Load Balancer:
+4.1. No console AWS, vá para o serviço EC2 e, em "Load Balancers", crie um novo Application Load Balancer (ALB).
+
+4.2. Configure o ALB para escutar nas portas desejadas (por exemplo, 80) e direcionar o tráfego para as instâncias EC2.
+
+4.3. Associe o ALB com o Auto Scaling Group (ASG) para garantir alta disponibilidade e escalabilidade.
+
+    5. Considerações Finais:
+5.1. Certifique-se de que o tráfego de internet sai pelo Load Balancer para evitar o uso de IPs públicos para a aplicação WordPress.
+
+5.2. Utilize o EFS para armazenar os estáticos do WordPress, garantindo persistência.
+
+REQUISITOS AWS
+  Configurações no Console AWS: Load Balancer, RDS, Banco e Auto Scaling
+
+     1. Configuração do Load Balancer (ALB - Application Load Balancer):
+1.1. Acesse o Console da AWS e vá para o serviço EC2.
+
+1.2. Em "Load Balancers", clique em "Create Load Balancer".
+
+1.3. Escolha "Application Load Balancer" e configure as opções conforme necessário.
+
+1.4. Em "Listeners", adicione uma regra para escutar na porta desejada (por exemplo, 80) e direcionar o tráfego para as instâncias EC2.
+
+1.5. Configure a segurança do ALB conforme as regras de segurança desejadas.
+
+1.6. Adicione as instâncias EC2 ao Target Group do ALB para distribuir o tráfego.
+
+1.7. Associe o ALB a um Auto Scaling Group (ASG) para garantir escalabilidade e alta disponibilidade.
+
+        2. Configuração do RDS (Relational Database Service):
+2.1. No Console da AWS, vá para o serviço RDS.
+2.2. Clique em "Create database" e escolha o tipo de banco de dados desejado (MySQL).
+2.3. Configure as opções de banco de dados, incluindo nome de usuário, senha e outras configurações específicas.
+2.4. Escolha as opções de instância e armazenamento conforme necessário.
+2.5. Configure as opções de segurança para controlar o acesso ao banco de dados.
+2.6. Finalize a criação do banco de dados.
+3. Configuração do Banco de Dados:
+3.1. Acesse o RDS no Console da AWS e selecione o banco de dados criado.
+3.2. Anote as informações de endpoint, nome de usuário e senha para uso posterior na configuração do WordPress.
+3.3. Verifique as configurações de segurança e ajuste conforme necessário.
+4. Configuração do Auto Scaling:
+4.1. No Console da AWS, vá para o serviço EC2.
+4.2. Em "Auto Scaling Groups", clique em "Create Auto Scaling group".
+4.3. Escolha as instâncias EC2 existentes ou crie novas conforme necessário.
+4.4. Configure as opções de escalabilidade automática, como a definição de políticas de escalabilidade.
+4.5. Associe o Auto Scaling Group ao Load Balancer para distribuir o tráfego entre as instâncias.
+4.6. Certifique-se de que as instâncias EC2 possuem o Docker instalado e configurado corretamente.
+5. Considerações Finais:
+5.1. Certifique-se de que o tráfego de internet saia pelo Load Balancer para evitar o uso de IPs públicos para a aplicação WordPress.
+5.2. Utilize o RDS para armazenamento persistente do banco de dados, garantindo confiabilidade e escalabilidade.
+
+
+
+   
+
+
+
+
+
+
