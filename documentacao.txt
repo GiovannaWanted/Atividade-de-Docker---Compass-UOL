@@ -30,8 +30,34 @@ de um Load Balancer utilizando o serviço da AWS.
   FROM wordpress:latest
 
 3.1. Construa e execute o contêiner:
+
  docker build -t meu-wordpress:latest .
+
  docker run -p 8080:80 -d meu-wordpress:latest
+
+ nano docker-compose.yml 
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: wordpress.xxxxxxxxx.us-east-1.rds.amazonaws.com
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: xxxxxxxx
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - /mnt/efs/fs1/wordpress:/var/www/html
+
+CTRL +  X PARA SAIR Y PARA SALVAR AS ALTERAÇÕES
+
+   docker-compose up -d
+
+ 
 
 3.2. Acesse o WordPress em um navegador para configurar a aplicação.
 
